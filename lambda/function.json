@@ -1,0 +1,16 @@
+{
+  "Architectures": [
+    "x86_64"
+  ],
+  "Description": "",
+  "FunctionName": "myStockLambdaFunction",
+  "Handler": "src/index.handler",
+  "MemorySize": 128,
+  "Role": "arn:aws:iam::832047677902:role/role_for_lambda",
+  "Runtime": "nodejs12.x",
+  "Tags": {},
+  "Timeout": 3,
+  "TracingConfig": {
+    "Mode": "PassThrough"
+  }
+}
