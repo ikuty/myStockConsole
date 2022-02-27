@@ -18,3 +18,25 @@ resource "aws_iam_role" "iam_for_lambda" {
   }
 }
 
+resource "aws_iam_policy" "policy_for_dynamodb" {
+  name = "policy_for_dynamodb"
+  description = "Access Dynamodb from Lambda policy"
+  policy =  <<-EOT
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "dynamodb:*",
+          "Resource": "${aws_dynamodb_table.irbank-page-caches.arn}"
+        }
+      ]
+    }
+  EOT
+}
+
+resource "aws_iam_policy_attachment" "dynamodb_policy_attach_to_lambda" {
+  name       = "dynamodb_policy_attach_to_lambda"
+  roles      = [aws_iam_role.iam_for_lambda.name]
+  policy_arn = aws_iam_policy.policy_for_dynamodb.arn
+}
