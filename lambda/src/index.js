@@ -1,6 +1,6 @@
 var aws = require('aws-sdk');
 var docClient = new aws.DynamoDB.DocumentClient({region: 'ap-northeast-1'});
-const https = require('axios');
+const axios = require('axios');
 
 exports.handler = async (event, context) => {
     var params = {
@@ -13,46 +13,41 @@ exports.handler = async (event, context) => {
             ":url": event.url
         }
     };
-    var resultJSON = await docClient.query(params, function(err, data) {  
+    var result = 0;
+    let content = "";
+    var resultJSON = await docClient.query(params,(err,data)=>{
         if (err) {
-            // エラーの場合、コンソールにエラー情報を表示
-            console.log(err, err.stack);
-        }else{
-            if (data.Items.length >0) {
-                if (data.Items[0].date == formatDate(getNowJST())) {
-                    console.log("Cache returned.");
-                } else {
-                    let content = getContent(event.url);
-                    updateItem(docClient,event.url,formatDate(getNowJST()),content);
-                    console.log("Cache updated.");
-                }
-            } else {
-                console.log("empty");
-                putItem(docClient,event.url,formatDate(getNowJST()),"hoge2");
-            }
-            // 取得できた場合、データをコンソールに表示
-            console.log(data.Items);
-//            console.log(data);
-      }
+            console.log(err,err.stack);
+        }
     }).promise();
-
+    if (resultJSON.Items.length > 0) {
+        if (resultJSON.Items[0].date == formatDate(getNowJST())) {
+            content = resultJSON.Items[0].content;
+            result = 1;
+        } else {
+            const newContent = await getContent();
+            updateItem(docClient,event.url,formatDate(getNowJST()),newContent);
+            content = newContent;
+            result = 2;
+        }
+    } else {
+        const newContent = await getContent();
+        putItem(docClient,event.url,formatDate(getNowJST()),newContent);
+        content = newContent;
+        result = 3;
+    }
     const response = {
-
-        foo: 'Hello, world 2!!',
-        bar: 'Goodbye, world',
-        event: event, 
-        context: context,
-
+        //event: event, 
+        //context: context,
         statusCode: 200, // HTTP 200 OK
         headers: {
             'x-custom-header': 'my custom header value'
         },
         body: JSON.stringify({
-            foo: 'Hello, world',
-            bar: 'Goodbye, world',
+            result: result,
+            content: content
         })
     };
-
     return response;
 };
 
@@ -107,6 +102,7 @@ function getNowJST(){
     return date;
 }
 
-function getContent(_url) {
-    return "hgoehgoe";
+async function getContent(_url) {
+    const d = await axios.get('https://yahoo.co.jp');
+    return d.data;
 }
