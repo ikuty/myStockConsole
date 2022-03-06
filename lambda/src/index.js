@@ -76,7 +76,6 @@ function updateItem(docClient,_url,_date,_content) {
         UpdateExpression: 'set #date = :newDate, #content=:newContent',
     }
     docClient.update(param,function(err, updateResult){
-        console.log(JSON.stringify(err));
         console.log('updated.');
     });
 }
@@ -92,7 +91,6 @@ function putItem(docClient,_url,_date,_content) {
         }
     }
     docClient.put(param,function(err, updateResult){
-        console.log(JSON.stringify(err));
         console.log('put done.');
     });
 }
@@ -103,6 +101,6 @@ function getNowJST(){
 }
 
 async function getContent(_url) {
-    const d = await axios.get('https://yahoo.co.jp');
+    const d = await axios.get(_url);
     return d.data;
 }
