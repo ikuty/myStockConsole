@@ -1,0 +1,17 @@
+{
+  "Architectures": [
+    "x86_64"
+  ],
+  "Description": "",
+  "FunctionName": "edinetCodeFunction",
+  "Handler": "src/index.handler",
+  "MemorySize": 512,
+  "Role": "arn:aws:iam::832047677902:role/role_for_lambda",
+  "Runtime": "nodejs12.x",
+  "Tags": {},
+  "Timeout": 120,
+  "TracingConfig": {
+    "Mode": "PassThrough"
+  }
+}
+
